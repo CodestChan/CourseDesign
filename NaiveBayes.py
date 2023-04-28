@@ -47,8 +47,9 @@ import matplotlib.pyplot as plt
 # # plt.scatter(x_h,result_e+1)
 # plt.show()
 
-a=np.array([1,2,3,4]).reshape(-1,1)
+a=np.array([0,2,4,5]).reshape(-1,1)
 b=a.ravel()
+b[1:3]=-1
 print(a)
 print(b)
-print(b.index(3))
+

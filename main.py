@@ -29,7 +29,7 @@
 #
 # words={}
 # text=f.read()
-# text=text.replace('\n','')
+# text=text.replace('\n',' ')
 # text_list=text.split()
 #
 # for word in text_list:
