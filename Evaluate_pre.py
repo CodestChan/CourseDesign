@@ -53,10 +53,12 @@ W3,b3=data['W3'],data['b3']
 pre_label=[]
 for i in range(test_w2v.shape[0]):
     z1=np.dot(W1,test_w2v[i].reshape(-1,1))+b1
-    y1=Relu(z1)
+    y1=np.tanh(z1)
+    y1[y1<0]=0
 
     z2=np.dot(W2,y1)+b2
-    y2=-z2
+    y2=np.tanh(z2)
+    y2[y2<0]=0
 
     z3=np.dot(W3,y2)+b3
     y3=soft_max(z3)

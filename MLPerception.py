@@ -107,12 +107,14 @@ W1,b1=init_param(sigma,(12,100)),init_param(sigma,(12,1))
 W2,b2=init_param(sigma,(12,12)),init_param(sigma,(12,1))
 W3,b3=init_param(sigma,(4,12)),init_param(sigma,(4,1))
 # for gen in range(10):
-for i in range(train_w2v.shape[0]):
+for i in range(4000):
     z1=np.dot(W1,train_w2v[i].reshape(-1,1))+b1
-    y1=Relu(z1)
+    y1=np.tanh(z1)
+    y1[y1<0]=0
 
     z2=np.dot(W2,y1)+b2
-    y2=Relu(z2)
+    y2=np.tanh(z2)
+    y2[y2<0]=0
 
     z3=np.dot(W3,y2)+b3
     y3=soft_max(z3)
@@ -121,22 +123,22 @@ for i in range(train_w2v.shape[0]):
     if label_i[np.argmax(temp_y)] == train_label[i]:
         continue
 
-    z1[z1>0]=1
-    z1[z1<0]=0
-    z2[z2>0]=1
-    z2[z2<0]=0
+    # z1[z1>0]=1
+    # z1[z1<0]=0
+    # z2[z2>0]=1
+    # z2[z2<0]=0
     sig3=y3-train_p[test[i]].reshape(-1,1)
-    sig2=np.dot(np.transpose(W3),sig3)*z2
-    sig1=np.dot(np.transpose(W2),sig2)*z1
-    # sig2=np.dot(np.transpose(W3),sig3)*np.gradient(np.tanh(z2),axis=0)
-    # sig1=np.dot(np.transpose(W2),sig2)*np.gradient(np.tanh(z1),axis=0)
+    # sig2=np.dot(np.transpose(W3),sig3)*z2
+    # sig1=np.dot(np.transpose(W2),sig2)*z1
+    sig2=np.dot(np.transpose(W3),sig3)*(np.gradient(np.tanh(z2),axis=0)+rd.uniform(0.05,0.1))
+    sig1=np.dot(np.transpose(W2),sig2)*(np.gradient(np.tanh(z1),axis=0)+rd.uniform(0.05,0.1))
 
-    W3-=0.2*np.dot(sig3,y2.reshape(1,-1))
-    b3-=0.2*sig3
-    W2-=0.2*np.dot(sig2,y1.reshape(1,-1))
-    b2-=0.2*sig2
-    W1-=0.2*np.dot(sig1,train_w2v[i].reshape(1,-1))
-    b1-=0.2*sig1
+    W3=W3-0.2*np.dot(sig3,y2.reshape(1,-1))
+    b3=b3-0.2*sig3
+    W2=W2-0.2*np.dot(sig2,y1.reshape(1,-1))
+    b2=b2-0.2*sig2
+    W1=W1-0.2*np.dot(sig1,train_w2v[i].reshape(1,-1))
+    b1=b1-0.2*sig1
 
 data={'W1':W1,'b1':b1,'W2':W2,'b2':b2,'W3':W3,'b3':b3}
 np.savez('train_para.npy',**data)
