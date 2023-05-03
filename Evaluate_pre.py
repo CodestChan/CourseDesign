@@ -1,7 +1,7 @@
 import numpy as np
 import copy
 
-data=np.load('train_para.npy.npz')
+data=np.load('train_para.npz')
 label_p=['B','M','E','S']
 TEST=r'D:\Machinelearn\envs\pynlp\pyhanlp-master\pyhanlp\static\data\test\icwb2-data\testing\pku_test.txt'
 GOLD=r'D:\Machinelearn\envs\pynlp\pyhanlp-master\pyhanlp\static\data\test\icwb2-data\gold\pku_test_gold.txt'
@@ -47,9 +47,23 @@ with open(GOLD,'r') as f3:
                 gold_label.append('M')
             gold_label.append('E')
 
+# test_w2v=[]
+# with open('out_w2v.txt','r',encoding='utf-8') as f1:
+#     for vector in f1.readlines()[1:]:
+#         vector=vector.strip('\n')
+#         temp=list(map(eval,vector[2:].split()))
+#         test_w2v.append(temp)
+# test_w2v=np.array(test_w2v)
+#
+# test_label=[]
+# with open('train_labels.txt','r',encoding='utf-8') as f2:
+#     for label in f2:
+#         test_label.append(label[-2])
+
 W1,b1=data['W1'],data['b1']
 W2,b2=data['W2'],data['b2']
 W3,b3=data['W3'],data['b3']
+W4,b4=data['W4'],data['b4']
 pre_label=[]
 for i in range(test_w2v.shape[0]):
     z1=np.dot(W1,test_w2v[i].reshape(-1,1))+b1
@@ -61,9 +75,13 @@ for i in range(test_w2v.shape[0]):
     y2[y2<0]=0
 
     z3=np.dot(W3,y2)+b3
-    y3=soft_max(z3)
+    y3=np.tanh(z3)
+    y3[y3<0]=0
 
-    temp_y = y3.ravel()
+    z4=np.dot(W4,y3)+b4
+    y4=soft_max(z4)
+
+    temp_y = y4.ravel()
     # pre_ind=np.argmax(temp_y)
     # pre_label.append(label_p[pre_ind])
     if i==0:
@@ -77,4 +95,4 @@ for i in range(test_w2v.shape[0]):
         pre_ind=np.argmax(temp_y)
         pre_label.append(label_p[pre_ind])
 
-print(pre_label)
+print(gold_label)
