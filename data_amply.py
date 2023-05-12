@@ -56,6 +56,7 @@ for i in range(232):
         wt=soup.find('width')
         ht=soup.find('height')
         wt.string,ht.string=ht.string,wt.string
+        soup.find('filename').string='9000'+'{:0>3}_{}'.format(i+1,j+1)
 
         data_n=str(soup)
         with open(NEWLAB+'\9000'+'{:0>3}_{}.xml'.format(i+1,j+1),'w',encoding='utf-8') as f1:
